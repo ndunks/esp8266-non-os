@@ -1,6 +1,8 @@
 # NodeMCU ESP8266 BLINK WIHTOUT SDK and LIBC
 
-    Based from github.com/espressif/ESP8266_NONOS_SDK
+    Based from:
+    - github.com/cnlohr/nosdk8266
+    - github.com/espressif/ESP8266_NONOS_SDK
 
 Can be run without hardware, use qemu-xtensa.
 
