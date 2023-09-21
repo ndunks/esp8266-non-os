@@ -209,5 +209,7 @@ SECTIONS
     _lit4_end = ABSOLUTE(.);
   } >iram1_0_seg :iram1_0_phdr
 }
+
 /* get ROM code address */
 INCLUDE "main.rom.ld"
+INCLUDE "esp8266.peripherals.ld"

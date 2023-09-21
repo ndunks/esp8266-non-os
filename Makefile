@@ -3,8 +3,10 @@ ESPTOOL ?= /home/rifin/app/ESP8266_RTOS_SDK/components/esptool_py/esptool/esptoo
 IDFMONITOR ?= /home/rifin/app/ESP8266_RTOS_SDK/tools/idf_monitor.py
 DEV ?= /dev/ttyUSB0
 
-CC = xtensa-lx106-elf-gcc
-SIZE = xtensa-lx106-elf-size
+PREFIX = xtensa-lx106-elf-
+CC = $(PREFIX)gcc
+SIZE = $(PREFIX)size
+
 CFLAGS = -I./include -Os -g  -mlongcalls -Wall -Werror -mtext-section-literals
 LDFLAGS = -L./ld \
 	-nostdlib \
@@ -15,6 +17,7 @@ LDFLAGS = -L./ld \
     -Wl,--no-check-sections \
     -Wl,--gc-sections	\
     -Wl,-static \
+	-Tmain.rom.ld \
 	-Tmain.ld
 
 
@@ -36,7 +39,6 @@ $(TARGET_ELF): $(OBJ)
 #	nm -S -n $(@) > image.map
 
 $(TARGET_BIN): $(TARGET_ELF)
-	$(SIZE) $<
 	$(ESPTOOL) elf2image $< -o $@
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
@@ -54,6 +56,9 @@ flash: $(TARGET_BIN)
 	$(ESPTOOL) --chip esp8266 --port "/dev/ttyUSB0" --baud 2000000 \
 		--before "default_reset" --after "hard_reset" write_flash -z  \
 		--flash_mode dio --flash_freq 40m --flash_size 2MB 0x0 $<
+info: $(TARGET_ELF) $(TARGET_BIN)
+	$(SIZE) $(TARGET_ELF)
+	ls -l $(TARGET_BIN)
 
 monitor:
 	$(IDFMONITOR) -b 74880 -p $(DEV) $(TARGET_ELF)
